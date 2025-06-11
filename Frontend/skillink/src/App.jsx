@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import AuthPage from './pages/AuthPage';
+import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage';
+import PlanPage from './pages/PlanPage';
+import UserProfile from './components/user/UserProfile';
+import FAQPage from './pages/FAQPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ConnectionPage from './pages/ConnectionPage';
+import Chatbot from './components/layout/Chatbot';
+import SignedInLandingPage from './pages/SignedInLandingPage';
+import OpportunitiesPage from './pages/OpportunitiesPage'; // Import the new OpportunitiesPage
+import ForumsPage from './pages/ForumsPage'; // Import the new ForumsPage
+import EventsPage from './pages/EventsPage'; // Import the new EventsPage
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+    const isAuthenticated = () => !!localStorage.getItem('authToken');
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    return (
+        <Router>
+            <div className="relative">
+                <Routes>
+                    <Route
+                        path="/"
+                        element={isAuthenticated() ? <SignedInLandingPage /> : <HomePage />}
+                    />
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/pricing" element={<PlanPage />} />
+                    <Route path="/faq" element={<FAQPage />} />
+                    <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                    <Route path="/connection" element={<ConnectionPage />} />
+                    <Route path="/opportunities" element={<OpportunitiesPage />} /> {/* Add the new Opportunities route */}
+                    <Route path="/forums" element={<ForumsPage />} /> {/* Add the new Forums route */}
+                    <Route path="/events" element={<EventsPage />} /> {/* Add the new Events route */}
+                    <Route
+                        path="/profile"
+                        element={isAuthenticated() ? <UserProfile /> : <Navigate to="/auth" />}
+                    />
+                </Routes>
+                <Chatbot />
+            </div>
+        </Router>
+    );
+};
 
-export default App
+export default App;

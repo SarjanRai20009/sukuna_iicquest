@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skillink - Connect, Collaborate, Innovate</title>
+    <link rel="icon" href="src/assets/Skillink favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .logo-img {
+            width: 100%; /* Make it responsive within its container */
+            max-width: 250px; /* **Increased maximum width for desktop** */
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto; /* Center the logo if its container allows */
+            padding: 5px; /* A little breathing room inside the border/shadow */
+        }
+
+        .aurora-bg {
+            background: linear-gradient(-45deg, #1e1b4b, #312e81, #1e40af, #7c3aed, #be185d, #dc2626);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
+        }
+        
+        @keyframes aurora {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.2), 0 0 80px rgba(139, 92, 246, 0.1);
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 20px #8b5cf6, 0 0 30px #8b5cf6, 0 0 40px #8b5cf6; }
+            to { box-shadow: 0 0 30px #8b5cf6, 0 0 40px #8b5cf6, 0 0 50px #8b5cf6, 0 0 60px #8b5cf6; }
+        }
+        
+        .holographic {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd);
+            background-size: 300% 300%;
+            animation: holographic 4s ease infinite;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        @keyframes holographic {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .particle-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: particles 20s linear infinite;
+        }
+        
+        @keyframes particles {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        .hover-lift {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: width 0.6s ease;
+            z-index: -1;
+            border-radius: 8px;
+        }
+        
+        .nav-link:hover::before {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .cyber-button {
+            position: relative;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .text-glow {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .logo-3d {
+            transition: transform 0.3s ease;
+        }
+        
+        .logo-3d:hover {
+            transform: rotateY(180deg) rotateX(10deg);
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .cosmic-border {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+            background-size: 300% 300%;
+            animation: cosmic 8s ease infinite;
+            padding: 2px;
+            border-radius: 16px;
+        }
+        
+        @keyframes cosmic {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        .mobile-menu-slide {
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .mobile-menu-slide.open {
+            transform: translateX(0);
+        }
+        
+        @media (max-width: 768px) {
+            .particle { display: none; }
+            .logo-img {
+                max-width: 180px; /* **Increased max-width on smaller screens** */
+            }
+        }
+
+        /* Custom styles for footer links */
+        .footer-link {
+            @apply text-gray-400 hover:text-white transition-colors duration-300;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const ParticleSystem = () => {
+            const particlesRef = useRef([]);
+            
+            useEffect(() => {
+                const createParticle = () => {
+                    return {
+                        id: Math.random(),
+                        x: Math.random() * 100,
+                        size: Math.random() * 4 + 1,
+                        duration: Math.random() * 10 + 15
+                    };
+                };
+                
+                const initialParticles = Array.from({ length: 20 }, createParticle);
+                particlesRef.current = initialParticles;
+                
+                const interval = setInterval(() => {
+                    particlesRef.current = [...particlesRef.current.slice(-19), createParticle()];
+                }, 2000);
+                
+                return () => clearInterval(interval);
+            }, []);
+            
+            return (
+                <div className="particle-bg">
+                    {particlesRef.current.map(particle => (
+                        <div
+                            key={particle.id}
+                            className="particle"
+                            style={{
+                                left: `${particle.x}%`,
+                                width: `${particle.size}px`,
+                                height: `${particle.size}px`,
+                                animationDuration: `${particle.duration}s`
+                            }}
+                        />
+                    ))}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 50);
+                };
+                
+                const handleMouseMove = (e) => {
+                    setMousePosition({ x: e.clientX, y: e.clientY });
+                };
+                
+                window.addEventListener('scroll', handleScroll);
+                window.addEventListener('mousemove', handleMouseMove);
+                
+                return () => {
+                    window.removeEventListener('scroll', handleScroll);
+                    window.removeEventListener('mousemove', handleMouseMove);
+                };
+            }, []);
+
+            const toggleMobileMenu = () => {
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+            };
+
+            return (
+                <div className="min-h-screen bg-black overflow-x-hidden">
+                    {/* Navigation */}
+                    <nav className={`fixed w-full z-50 transition-all duration-500 ${
+                        isScrolled ? 'glass-dark' : 'bg-transparent'
+                    }`}>
+                        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                            <div className="flex items-center justify-between h-20">
+                                {/* Logo */}
+                                <div className="flex items-center space-x-4">
+                                    {/* Removed w-12 h-12 from this div to allow logo-img to control size */}
+                                    <div className="flex items-center justify-center">
+                                        <img src="src/assets/banner.svg" alt="Skillink Logo" className="logo-img" />
+                                    </div>
+                                </div>
+
+                                {/* Desktop Navigation */}
+                                <div className="hidden md:flex items-center space-x-12">
+                                    <a href="#" className="nav-link px-4 py-2 rounded-lg font-medium">
+                                        Solutions
+                                    </a>
+                                    <a href="#" className="nav-link px-4 py-2 rounded-lg font-medium">
+                                        Talents
+                                    </a>
+                                    <a href="#" className="nav-link px-4 py-2 rounded-lg font-medium">
+                                        Providers
+                                    </a>
+                                    <a href="#" className="nav-link px-4 py-2 rounded-lg font-medium">
+                                        About Us
+                                    </a>
+                                </div>
+
+                                {/* Desktop Auth Buttons */}
+                                <div className="hidden md:flex items-center space-x-4">
+                                    <button className="glass-morphism px-8 py-3 rounded-full font-medium text-white hover-lift">
+                                        Sign In
+                                    </button>
+                                    <button className="cyber-button px-8 py-3 rounded-full font-medium pulse-glow">
+                                        Sign Up
+                                    </button>
+                                </div>
+
+                                {/* Mobile menu button */}
+                                <div className="md:hidden">
+                                    <button
+                                        onClick={toggleMobileMenu}
+                                        className="text-white hover:text-purple-300 focus:outline-none transition-colors duration-300"
+                                    >
+                                        <svg className="h-8 w-8" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                            {isMobileMenuOpen ? (
+                                                <path d="M6 18L18 6M6 6l12 12" />
+                                            ) : (
+                                                <path d="M4 6h16M4 12h16M4 18h16" />
+                                            )}
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Mobile Menu */}
+                        <div className={`md:hidden mobile-menu-slide ${isMobileMenuOpen ? 'open' : ''} fixed top-20 right-0 w-80 h-screen glass-dark`}>
+                            <div className="px-8 py-12 space-y-8">
+                                <a href="#" className="block text-white hover:text-purple-300 font-medium text-xl transition-colors duration-300">
+                                    Solutions
+                                </a>
+                                <a href="#" className="block text-white hover:text-purple-300 font-medium text-xl transition-colors duration-300">
+                                    Talents
+                                </a>
+                                <a href="#" className="block text-white hover:text-purple-300 font-medium text-xl transition-colors duration-300">
+                                    Providers
+                                </a>
+                                <a href="#" className="block text-white hover:text-purple-300 font-medium text-xl transition-colors duration-300">
+                                    About Us
+                                </a>
+                                <div className="pt-8 border-t border-white/20 space-y-6">
+                                    <button className="w-full glass-morphism px-8 py-4 rounded-full font-medium text-white hover-lift">
+                                        Sign In
+                                    </button>
+                                    <button className="w-full cyber-button px-8 py-4 rounded-full font-medium">
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section className="aurora-bg min-h-screen flex items-center justify-center relative overflow-hidden">
+                        <ParticleSystem />
+                        
+                        {/* Dynamic background elements */}
+                        <div className="absolute inset-0 overflow-hidden z-10">
+                            <div 
+                                className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl floating-animation"
+                                style={{
+                                    left: `${mousePosition.x * 0.02}px`,
+                                    top: `${mousePosition.y * 0.02}px`
+                                }}
+                            ></div>
+                            <div 
+                                className="absolute w-80 h-80 bg-blue-500/20 rounded-full blur-3xl floating-animation"
+                                style={{
+                                    right: `${mousePosition.x * 0.01}px`,
+                                    bottom: `${mousePosition.y * 0.01}px`,
+                                    animationDelay: '2s'
+                                }}
+                            ></div>
+                        </div>
+                        
+                        <div className="relative z-20 text-center text-white px-6 max-w-6xl mx-auto">
+                            <div className="cosmic-border mb-8 inline-block">
+                                {/* <img src="src/assets/Skillink logo.png" alt="Skillink Logo" className="w-48 h-auto" /> */}
+                            </div>
+                            
+                            <h1 className="text-6xl md:text-8xl font-black mb-8 text-glow leading-tight">
+                                Bridging 
+                                <span className="holographic"> Opportunities</span> and 
+                                <br />
+                                <span className="holographic">Talents</span>
+                            </h1>
+                            
+                            <p className="text-xl md:text-2xl mb-12 text-white/80 max-w-3xl mx-auto leading-relaxed">
+                                Our platform empowers **Opportunity Providers** to find the perfect **Talents** to solve their challenges, and helps **Talents** discover impactful projects.
+                            </p>
+                            
+                            <div className="flex flex-col sm:flex-row items-center justify-center space-y-6 sm:space-y-0 sm:space-x-8 mb-16">
+                                <button className="cyber-button px-12 py-5 rounded-full font-bold text-lg neon-glow">
+                                    🚀 Find a Solution
+                                </button>
+                                <button className="glass-morphism px-12 py-5 rounded-full font-bold text-lg hover-lift">
+                                    💼 Discover Opportunities
+                                </button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                                <div className="feature-card p-6 rounded-2xl text-center">
+                                    <div className="text-4xl mb-4">💡</div>
+                                    <h3 className="text-xl font-bold mb-2">Problem Solvers</h3>
+                                    <p className="text-white/70">Connect with innovative minds ready to tackle your challenges.</p>
+                                </div>
+                                <div className="feature-card p-6 rounded-2xl text-center">
+                                    <div className="text-4xl mb-4">🌐</div>
+                                    <h3 className="text-xl font-bold mb-2">Global Network</h3>
+                                    <p className="text-white/70">Access a diverse pool of talent and opportunity providers worldwide.</p>
+                                </div>
+                                <div className="feature-card p-6 rounded-2xl text-center">
+                                    <div className="text-4xl mb-4">🤝</div>
+                                    <h3 className="text-xl font-bold mb-2">Seamless Collaboration</h3>
+                                    <p className="text-white/70">Tools to manage projects and foster effective teamwork.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="scroll-indicator">
+                            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+                                <div className="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Features Section */}
+                    <section className="py-32 bg-gradient-to-b from-black to-gray-900 relative">
+                        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                            <div className="text-center mb-20">
+                                <h2 className="text-5xl md:text-6xl font-black text-white mb-8 holographic">
+                                    How It Works
+                                </h2>
+                                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                                    We make it simple to find your next great collaboration.
+                                </p>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                                <div className="space-y-8">
+                                    <div className="glass-morphism p-8 rounded-3xl hover-lift">
+                                        <div className="flex items-center space-x-4 mb-4">
+                                            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                                                <span className="text-2xl">🔍</span>
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-white">Discover & Post</h3>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed">
+                                            Opportunity providers post their challenges, while talents showcase their skills and portfolios. Our intelligent matching system does the heavy lifting.
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="glass-morphism p-8 rounded-3xl hover-lift">
+                                        <div className="flex items-center space-x-4 mb-4">
+                                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                                <span className="text-2xl">💬</span>
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-white">Connect & Communicate</h3>
+                                        </div>
+                                        <p className="text-gray-300 leading-relaxed">
+                                            Secure messaging, video calls, and integrated collaboration tools to foster clear communication and progress.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="glass-morphism p-12 rounded-3xl hover-lift">
+                                    <div className="text-center">
+                                        <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-3xl mx-auto mb-8 flex items-center justify-center pulse-glow">
+                                            <span className="text-4xl">✅</span>
+                                        </div>
+                                        <h3 className="text-3xl font-bold text-white mb-6">Achieve & Grow</h3>
+                                        <p className="text-gray-300 text-lg leading-relaxed mb-8">
+                                            Complete projects, receive feedback, and build a reputation. Both providers and talents grow their networks and impact.
+                                        </p>
+                                        <button className="cyber-button px-8 py-4 rounded-full font-bold">
+                                            Join the Network
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="bg-gray-950 py-12 text-gray-400">
+                        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div className="col-span-1 md:col-span-2">
+                                <div className="flex items-center space-x-3 mb-4">
+                                   <img src="src/assets/banner.svg" alt="Skillink Logo" className="logo-img" />
+                                </div>
+                                <p className="text-gray-500 leading-relaxed">
+                                    Connecting the world's challenges with its brightest minds. Solve problems, build careers, innovate together.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-white text-lg font-semibold mb-4">Platform</h3>
+                                <ul className="space-y-3">
+                                    <li><a href="#" className="footer-link">How it Works</a></li>
+                                    <li><a href="#" className="footer-link">For Opportunity Providers</a></li>
+                                    <li><a href="#" className="footer-link">For Talents</a></li>
+                                    <li><a href="#" className="footer-link">Browse Projects</a></li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h3 className="text-white text-lg font-semibold mb-4">Company</h3>
+                                <ul className="space-y-3">
+                                    <li><a href="#" className="footer-link">About Us</a></li>
+                                    <li><a href="#" className="footer-link">Careers</a></li>
+                                    <li><a href="#" className="footer-link">Blog</a></li>
+                                    <li><a href="#" className="footer-link">Press</a></li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h3 className="text-white text-lg font-semibold mb-4">Support</h3>
+                                <ul className="space-y-3">
+                                    <li><a href="#" className="footer-link">FAQ</a></li>
+                                    <li><a href="#" className="footer-link">Help Center</a></li>
+                                    <li><a href="#" className="footer-link">Contact Us</a></li>
+                                    <li><a href="#" className="footer-link">Privacy Policy</a></li>
+                                    <li><a href="#" className="footer-link">Terms of Service</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
+                            &copy; {new Date().getFullYear()} Skillink. All rights reserved.
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
