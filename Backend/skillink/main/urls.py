@@ -27,7 +27,7 @@ urlpatterns = [
     path('skills/', views.SkillList.as_view(), name='api-skill-list'),
     path('skills/<int:pk>/', views.SkillDetail.as_view(), name='api-skill-detail'),
     path('skills/search/', views.SkillSearch.as_view(), name='api-skill-search'),
-
+    # path('submit-job-post',views., name='submit_job_post'),
     # UserJobSeeker URLs
     path('user-job-seekers/', views.UserJobSeekerList.as_view(), name='api-user-job-seeker-list'),
     path('user-job-seekers/<int:id>/', views.UserJobSeekerDetail.as_view(), name='api-user-job-seeker-detail'), # Using 'id' as lookup_field

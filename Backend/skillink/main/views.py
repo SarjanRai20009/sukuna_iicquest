@@ -261,7 +261,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.utils import timezone
-from django.contrib import messages
+from django.contrib import messages 
 from django.db.models.functions import Lower
 from . import models
 
@@ -398,8 +398,6 @@ class LogoutView(View):
         """Logs out the user and redirects them to the base template."""
         logout(request)  
         return redirect('/login/')
-
-
 
 
 
@@ -553,12 +551,13 @@ class UserJobSeekerDetail(generics.RetrieveUpdateDestroyAPIView):
 class PortfolioItemList(generics.ListCreateAPIView):
     serializer_class = PortfolioItemSerializer
     permission_classes = [permissions.IsAuthenticated]
+    queryset = PortfolioItem.objects.all()
 
-    def get_queryset(self):
-        # Users can only see and add their own portfolio items
-        if hasattr(self.request.user, 'userjobseeker'):
-            return PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
-        return PortfolioItem.objects.none()
+    # def get_queryset(self):
+    #     # Users can only see and add their own portfolio items
+    #     if hasattr(self.request.user, 'userjobseeker'):
+    #         return PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
+    #     return PortfolioItem.objects.none()
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -577,12 +576,13 @@ class PortfolioItemList(generics.ListCreateAPIView):
 class PortfolioItemDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PortfolioItemSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
 
     def get_queryset(self):
         # Users can only retrieve/update/delete their own portfolio items
         if hasattr(self.request.user, 'userjobseeker'):
-            return models.PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
-        return models.PortfolioItem.objects.none()
+            return PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
+        return PortfolioItem.objects.none()
     def perform_create(self, serializer):
         # Ensure the portfolio item is associated with the current job seeker
         serializer.save(user=self.request.user.userjobseeker)
@@ -1144,6 +1144,184 @@ class ScholarshipApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
 
 def job_posts(request):
     return render(request, 'base_template/job_post.html')
+@login_required
+def job_posts(request):
+    # List all active job posts
+    posts = JobPost.objects.filter(is_active=True).order_by('-created_at')
+    return render(request, 'base_template/job_post.html', {'job_posts': posts})
+
+@login_required
+def create_job_post(request):
+    if request.method == 'POST':
+        try:
+            # Get form data
+            title = request.POST.get('title')
+            company_name = request.POST.get('company_name')
+            description = request.POST.get('description')
+            requirements = request.POST.get('requirements')
+            responsibilities = request.POST.get('responsibilities', '')
+            required_skills = request.POST.get('required_skills')
+            job_type = request.POST.get('job_type')
+            experience_level = request.POST.get('experience_level')
+            location = request.POST.get('location')
+            is_remote = request.POST.get('is_remote') == 'on'
+            salary_min = request.POST.get('salary_min')
+            salary_max = request.POST.get('salary_max')
+            currency = request.POST.get('currency', 'USD')
+            application_deadline = request.POST.get('application_deadline')
+
+            # Validate required fields
+            if not all([title, company_name, description, requirements, 
+                       required_skills, job_type, experience_level, location]):
+                raise ValidationError("All required fields must be filled.")
+
+            # Get or create company
+            company, created = Company.objects.get_or_create(
+                name=company_name,
+                defaults={
+                    'created_by': request.user,
+                    'industry': 'Unknown',
+                    'website': '',
+                    'email': '',
+                    'phone_number': '',
+                }
+            )
+
+            # Parse application deadline if provided
+            deadline = None
+            if application_deadline:
+                try:
+                    deadline = datetime.datetime.strptime(application_deadline, '%Y-%m-%dT%H:%M')
+                except ValueError:
+                    raise ValidationError("Invalid date format for application deadline")
+
+            # Create job post
+            job_post = JobPost(
+                title=title,
+                company=company,
+                description=description,
+                requirements=requirements,
+                responsibilities=responsibilities,
+                job_type=job_type,
+                experience_level=experience_level,
+                location=location,
+                is_remote=is_remote,
+                salary_min=float(salary_min) if salary_min else None,
+                salary_max=float(salary_max) if salary_max else None,
+                currency=currency,
+                application_deadline=deadline,
+                posted_by=request.user,
+                is_active=True
+            )
+            
+            # Save the job post first to get an ID
+            job_post.save()
+            
+            # Process skills (comma-separated list)
+            skills_list = [skill.strip() for skill in required_skills.split(',') if skill.strip()]
+            for skill_name in skills_list:
+                skill, created = Skill.objects.get_or_create(name=skill_name)
+                job_post.required_skills.add(skill)
+            
+            messages.success(request, 'Job post created successfully!')
+            return redirect('job_posts')
+            
+        except ValidationError as e:
+            messages.error(request, str(e))
+        except Exception as e:
+            messages.error(request, f'Error creating job post: {str(e)}')
+    
+    # For GET requests or if there's an error in POST, render the form
+    return render(request, 'base_template/create_job_post.html')
+
+@login_required
+def view_job_post(request, post_id):
+    try:
+        job_post = JobPost.objects.get(id=post_id, is_active=True)
+        # Increment view count
+        job_post.views_count += 1
+        job_post.save()
+        return render(request, 'base_template/job_post_detail.html', {'job_post': job_post})
+    except JobPost.DoesNotExist:
+        messages.error(request, 'Job post not found or no longer available')
+        return redirect('job_posts')
+
+@login_required
+def edit_job_post(request, post_id):
+    try:
+        job_post = JobPost.objects.get(id=post_id, posted_by=request.user)
+        
+        if request.method == 'POST':
+            # Similar to create_job_post but with updates
+            job_post.title = request.POST.get('title')
+            company_name = request.POST.get('company_name')
+            job_post.description = request.POST.get('description')
+            job_post.requirements = request.POST.get('requirements')
+            job_post.responsibilities = request.POST.get('responsibilities', '')
+            required_skills = request.POST.get('required_skills')
+            job_post.job_type = request.POST.get('job_type')
+            job_post.experience_level = request.POST.get('experience_level')
+            job_post.location = request.POST.get('location')
+            job_post.is_remote = request.POST.get('is_remote') == 'on'
+            job_post.salary_min = float(request.POST.get('salary_min')) if request.POST.get('salary_min') else None
+            job_post.salary_max = float(request.POST.get('salary_max')) if request.POST.get('salary_max') else None
+            job_post.currency = request.POST.get('currency', 'USD')
+            
+            if request.POST.get('application_deadline'):
+                try:
+                    job_post.application_deadline = datetime.datetime.strptime(
+                        request.POST.get('application_deadline'), '%Y-%m-%dT%H:%M')
+                except ValueError:
+                    messages.error(request, "Invalid date format for application deadline")
+                    return redirect('edit_job_post', post_id=post_id)
+            
+            # Update company if changed
+            if job_post.company.name != company_name:
+                company, created = Company.objects.get_or_create(
+                    name=company_name,
+                    defaults={
+                        'created_by': request.user,
+                        'industry': 'Unknown',
+                        'website': '',
+                        'email': '',
+                        'phone_number': '',
+                    }
+                )
+                job_post.company = company
+            
+            job_post.save()
+            
+            # Update skills
+            job_post.required_skills.clear()
+            skills_list = [skill.strip() for skill in required_skills.split(',') if skill.strip()]
+            for skill_name in skills_list:
+                skill, created = Skill.objects.get_or_create(name=skill_name)
+                job_post.required_skills.add(skill)
+            
+            messages.success(request, 'Job post updated successfully!')
+            return redirect('view_job_post', post_id=post_id)
+        
+        # For GET request, populate form with existing data
+        skills = ", ".join([skill.name for skill in job_post.required_skills.all()])
+        return render(request, 'base_template/edit_job_post.html', {
+            'job_post': job_post,
+            'skills': skills
+        })
+        
+    except JobPost.DoesNotExist:
+        messages.error(request, 'Job post not found or you are not authorized to edit it')
+        return redirect('job_posts')
+
+@login_required
+def delete_job_post(request, post_id):
+    try:
+        job_post = JobPost.objects.get(id=post_id, posted_by=request.user)
+        job_post.is_active = False
+        job_post.save()
+        messages.success(request, 'Job post has been deactivated')
+    except JobPost.DoesNotExist:
+        messages.error(request, 'Job post not found or you are not authorized to delete it')
+    return redirect('job_posts')
 
 def events(request):
     return render(request, 'opportunities/events.html')
