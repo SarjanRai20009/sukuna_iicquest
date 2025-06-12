@@ -1425,16 +1425,64 @@ def internships(request):
 def scholarships(request):
     return render(request, 'opportunities/scholarships.html')
 
+def MicroOpportunityList(request):
+
+    return render(request, 'base_template/micro_opportunities.html')
 
 
 
 
+def viewMentorList(request):
+    user = UserJobSeeker.objects.get(pk=request.session['ujs_id'])  # or however you're authenticating
+    user_skills = user.areas_of_Interest.split(',')  # Assuming this is comma-separated skill names
+    mentors = Mentor.objects.filter(specializations__name__in=user_skills).distinct()
+    return render(request, 'base_template/view_mentorelist.html', {'mentors': mentors})
 
 
 
+@login_required
+def apply_to_job(request, job_post_id):
+    # Check if the user has a UserJobSeeker profile
+    try:
+        applicant = request.user.userjobseeker
+    except UserJobSeeker.DoesNotExist:
+        messages.error(request, "Only job seekers can apply for jobs.")
+        return redirect('job_posts')  # Redirect to job posts page
 
+    job_post = get_object_or_404(JobPost, id=job_post_id)
 
+    # Check if user already applied
+    if JobApplication.objects.filter(job_post=job_post, applicant=applicant).exists():
+        messages.warning(request, "You have already applied to this job.")
+        return redirect('job_posts')  # or you could redirect to the job detail page
 
+    if request.method == 'POST':
+        cover_letter = request.POST.get('cover_letter', '')
+        resume = request.FILES.get('resume')
+
+        # Validate required fields
+        if not resume:
+            messages.error(request, "Please upload your resume.")
+            return render(request, 'base_template/apply_to_job.html', {'job_post': job_post})
+
+        # Create the application
+        JobApplication.objects.create(
+            job_post=job_post,
+            applicant=applicant,
+            cover_letter=cover_letter,
+            resume=resume,
+            status='applied'  # Set initial status
+        )
+
+        # Update applications count on the job post
+        job_post.applications_count += 1
+        job_post.save()
+
+        messages.success(request, "Your application has been submitted successfully!")
+        return redirect('job_posts')  # Redirect to job posts page after successful application
+
+    # For GET requests, show the application form
+    return render(request, 'base_template/apply_to_job.html', {'job_post': job_post})
 
 
 

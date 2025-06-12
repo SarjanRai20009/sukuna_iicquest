@@ -297,13 +297,15 @@
                             </p>
                         </div>
                         <div class="row g-4">
+                            
                             <div class="col-md-4">
+                                
                                 <div class="card h-100 border-0 shadow-sm card-hover">
                                     <div class="card-body text-center p-4">
                                         <div class="feature-icon">
                                             <i class="fas fa-user-graduate"></i>
                                         </div>
-                                        <h4 class="mb-3">Mentorship Programs</h4>
+                                        <h4 class="mb-3"> <a href="{% url 'view-mentor-list' %}" class="text-decoration-none text-dark">Mentorship Programs</a></h4>
                                         <p class="text-muted">
                                             Connect with experienced IT professionals who can guide you through your learning journey and career path.
                                         </p>
@@ -316,7 +318,7 @@
                                         <div class="feature-icon">
                                             <i class="fas fa-briefcase"></i>
                                         </div>
-                                        <h4 class="mb-3">Job Opportunities</h4>
+                                        <h4 class="mb-3">  <a href="{% url 'job_posts' %}" class="text-decoration-none text-dark">Job </a>and <a href="{% url 'api-micro-opportunity-list' %}" class="text-decoration-none text-dark">Micro Opportunities</a></h4>
                                         <p class="text-muted">
                                             Access exclusive job postings from top tech companies looking for fresh talent like you.
                                         </p>
@@ -358,8 +360,9 @@
                                         <p class="card-text text-muted">
                                             Gain real-world experience with internships at top tech companies.
                                         </p>
-                                        <a href="#" class="btn btn-sm btn-primary">Browse Internships</a
-                >
+                                        <a href="{% url 'internships' %}" class="btn btn-sm btn-primary">Browse Internships</a>
+
+                
               </div>
             </div>
           </div>
@@ -371,11 +374,11 @@
                 alt="Jobs"
               />
               <div class="card-body">
-                <h4 class="card-title">Entry-Level Jobs</h4>
+                <h4 class="card-title">Micro Opportunities</h4>
                 <p class="card-text text-muted">
-                  Find your dream job with companies looking for new IT talent.
+                  Start You journey with Micro Jobs 
                 </p>
-                <a href="#" class="btn btn-sm btn-primary">Browse Jobs</a>
+                <a href="{% url 'api-micro-opportunity-list' %}" class="btn btn-sm btn-primary">Browse Jobs</a>
                                     </div>
                                 </div>
                             </div>
@@ -387,7 +390,7 @@
                                         <p class="card-text text-muted">
                                             Connect with mentors who can guide you in your career journey.
                                         </p>
-                                        <a href="#" class="btn btn-sm btn-primary">Find Mentors</a>
+                                        <a href="{% url 'view-mentor-list' %}" class="btn btn-sm btn-primary">Find Mentors</a>
                                     </div>
                                 </div>
                             </div>

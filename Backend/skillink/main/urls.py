@@ -15,17 +15,21 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('login/', SignIn, name = 'signin'),
     path('logout/', logout_view, name='logout'),
+    path('view-mentors/', viewMentorList, name='view-mentor-list'),
 
     path('opportunities/matching-jobs/', MatchingJobPostsView.as_view(), name='matching_jobs'),
     path('register/', views.register_user, name='register_user'),
     path('job_application/', views.job_posts, name='job_posts'),
 
     path('job-posts/', views.JobPostListView.as_view(), name='job_posts'),
+
+    path('job_apply/<int:job_post_id>/', views.apply_to_job, name='apply_to_job'),
     # path('viewcontents/', views.ContentListView.as_view(), name='ujs-content-list'),
 
-
+    path('micro-opportunities/', MicroOpportunityList, name='api-micro-opportunity-list'),
     path('opportunities/events/', views.events, name='events'),
     path('opportunities/project_collab/', views.project_collab, name='project_collab'),
+    
     path('opportunities/internships/', views.internships, name='internships'),
     path('opportunities/scholarships/', views.scholarships, name='scholarships'),
     
@@ -59,9 +63,9 @@ urlpatterns = [
     path('experts/<int:id>/', views.ExpertDetail.as_view(), name='api-expert-detail'), # Using 'id' as lookup_field
 
     # JobPost URLs
-    path('job-posts/', views.JobPostList.as_view(), name='api-job-post-list'),
-    path('job-posts/<int:id>/', views.JobPostDetail.as_view(), name='api-job-post-detail'), # Using 'id' as lookup_field
-    path('job-posts/search/', views.JobPostSearch.as_view(), name='api-job-post-search'),
+    path('api-job-posts/', views.JobPostList.as_view(), name='api-job-post-list'),
+    path('api-job-posts/<int:id>/', views.JobPostDetail.as_view(), name='api-job-post-detail'), # Using 'id' as lookup_field
+    path('api-job-posts/search/', views.JobPostSearch.as_view(), name='api-job-post-search'),
 
     # NewsEvent URLs
     path('news-events/', views.NewsEventList.as_view(), name='api-news-event-list'),
