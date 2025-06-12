@@ -513,12 +513,13 @@ class UserJobSeekerDetail(generics.RetrieveUpdateDestroyAPIView):
 class PortfolioItemList(generics.ListCreateAPIView):
     serializer_class = PortfolioItemSerializer
     permission_classes = [permissions.IsAuthenticated]
+    queryset = PortfolioItem.objects.all()
 
-    def get_queryset(self):
-        # Users can only see and add their own portfolio items
-        if hasattr(self.request.user, 'userjobseeker'):
-            return PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
-        return PortfolioItem.objects.none()
+    # def get_queryset(self):
+    #     # Users can only see and add their own portfolio items
+    #     if hasattr(self.request.user, 'userjobseeker'):
+    #         return PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
+    #     return PortfolioItem.objects.none()
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -537,12 +538,13 @@ class PortfolioItemList(generics.ListCreateAPIView):
 class PortfolioItemDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PortfolioItemSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
 
     def get_queryset(self):
         # Users can only retrieve/update/delete their own portfolio items
         if hasattr(self.request.user, 'userjobseeker'):
-            return models.PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
-        return models.PortfolioItem.objects.none()
+            return PortfolioItem.objects.filter(user=self.request.user.userjobseeker)
+        return PortfolioItem.objects.none()
     def perform_create(self, serializer):
         # Ensure the portfolio item is associated with the current job seeker
         serializer.save(user=self.request.user.userjobseeker)
