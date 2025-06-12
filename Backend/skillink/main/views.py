@@ -271,7 +271,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from django.views.generic import TemplateView
-
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from rest_framework import permissions
@@ -284,8 +284,8 @@ from django.db.models import Q
 
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy, reverse
-
-
+from django.db import IntegrityError
+from django.utils.dateparse import parse_date
 from django.views.generic import TemplateView
 from django.views import View
 from .serializers import *
@@ -456,6 +456,46 @@ class SkillSearch(generics.ListAPIView):
             )
         return Skill.objects.none()  # Return an empty queryset if no query is provided
 
+def register_user(request):
+    if request.method == 'POST':
+        try:
+            # Collect data from the form
+            full_name = request.POST.get('full_name')
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            phone_number = request.POST.get('phone_number')
+            dob = request.POST.get('date_of_birth')
+            address = request.POST.get('address')
+            gender = request.POST.get('gender')
+            interests = request.POST.get('areas_of_interest')
+            pan_number = request.POST.get('pan_number')
+            profile_image = request.FILES.get('profile_image')
+
+            # Save to database
+            new_user = UserJobSeeker(
+                ujs_full_name=full_name,
+                ujs_username=username,
+                ujs_email=email,
+                ujs_password=password,  # Will be hashed in model save()
+                ujs_phone_number=phone_number,
+                ujs_date_of_birth=parse_date(dob) if dob else None,
+                ujs_address=address,
+                gender=gender,
+                areas_of_Interest=interests,
+                pan_number=pan_number,
+                profile_image=profile_image
+            )
+            new_user.save()
+            messages.success(request, 'Registration successful!')
+            return redirect('register_user')  # or redirect to login/dashboard
+
+        except IntegrityError as e:
+            messages.error(request, 'Username, email, or PAN already exists.')
+        except Exception as e:
+            messages.error(request, f'Error during registration: {str(e)}')
+
+    return render(request, 'auth_template/register.html')
 
 class UserJobSeekerList(generics.ListCreateAPIView):
     queryset = UserJobSeeker.objects.all()
@@ -1102,7 +1142,20 @@ class ScholarshipApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
             "message": "Scholarship application deleted successfully!"
         }, status=status.HTTP_204_NO_CONTENT)
 
+def job_posts(request):
+    return render(request, 'base_template/job_post.html')
 
+def events(request):
+    return render(request, 'opportunities/events.html')
+
+def project_collab(request):
+    return render(request, 'opportunities/project_collab.html')
+
+def internships(request):
+    return render(request, 'opportunities/internships.html')
+
+def scholarships(request):
+    return render(request, 'opportunities/scholarships.html')
 
 
 

@@ -113,9 +113,9 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#" style="color: var(--primary-color)">
-                <i class="fas fa-code me-2"></i>SkilLink
-            </a>
+            {% load static %}
+            <img src="{% static 'banner.svg' %}" alt="Banner" />
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -124,9 +124,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#features">Features</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#opportunities">Opportunities</a>
-                    </li>
+                    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="opportunitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Opportunities
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="opportunitiesDropdown">
+<a class="dropdown-item" href="{% url 'job_posts' %}">Job Posts</a>
+<a class="dropdown-item" href="{% url 'events' %}">Events</a>
+<a class="dropdown-item" href="{% url 'project_collab' %}">Project Collab</a>
+<a class="dropdown-item" href="{% url 'internships' %}">Internships</a>
+<a class="dropdown-item" href="{% url 'scholarships' %}">Scholarship</a>
+
+    </ul>
+</li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="#testimonials">Testimonials</a>
                     </li>
@@ -148,14 +159,9 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">
-                        Launch Your IT Career with SkilLink
-                    </h1>
-                    <p class="lead mb-4">
-                        Connect with mentors, find internships, and discover job opportunities tailored for IT students and fresh talent.
-                    </p>
+                   {% block content %} {% endblock %}
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="#" class="btn btn-light btn-lg px-4">Get Started</a>
+                        <a href="/api/register" class="btn btn-light btn-lg px-4">Get Started</a>
                         <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a
               >
             </div>
@@ -439,24 +445,26 @@
                         </div>
                     </div>
                 </section>
-
+                
                 <!-- CTA Section -->
                 <section class="py-5 bg-primary text-white">
                     <div class="container">
                         <div class="row align-items-center">
                             <div class="col-lg-8">
-                                <h2 class="mb-3">Ready to jumpstart your IT careeFr?</h2>
+                                <h2 class="mb-3">Ready to jumpstart your IT career</h2>
                                 <p class="lead mb-0">
                                     Join thousands of students and fresh graduates who found their path in tech through SkilLink.
                                 </p>
                             </div>
                             <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                                <a href="#" class="btn btn-light btn-lg px-4">Sign Up Now</a>
+                                <a href="/api/register" class="btn btn-light btn-lg px-4">Sign Up Now</a>
                             </div>
                         </div>
                     </div>
                 </section>
 
+
+                
                 <!-- Contact Section -->
                 <section id="contact" class="py-5 bg-light">
                     <div class="container">

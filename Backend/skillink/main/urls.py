@@ -17,8 +17,12 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view(), name='logout'),
 
     
-    
-    
+    path('register/', views.register_user, name='register_user'),
+    path('opportunities/job_posts/', views.job_posts, name='job_posts'),
+    path('opportunities/events/', views.events, name='events'),
+    path('opportunities/project_collab/', views.project_collab, name='project_collab'),
+    path('opportunities/internships/', views.internships, name='internships'),
+    path('opportunities/scholarships/', views.scholarships, name='scholarships'),
     
     path('skills/', views.SkillList.as_view(), name='api-skill-list'),
     path('skills/<int:pk>/', views.SkillDetail.as_view(), name='api-skill-detail'),
