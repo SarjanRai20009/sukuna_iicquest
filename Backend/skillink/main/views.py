@@ -263,6 +263,8 @@ from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.contrib import messages 
 from django.db.models.functions import Lower
+import datetime
+
 from . import models
 
 from django.template.defaulttags import register
@@ -314,7 +316,6 @@ from .serializers import (
     ScholarshipSerializer, JobApplicationSerializer, InternshipApplicationSerializer,
     ScholarshipApplicationSerializer
 )
-
 class IndexView(TemplateView):
     template_name = 'base_template/main.html'
     
@@ -329,8 +330,12 @@ class IndexView(TemplateView):
             return context
             
         try:
-            # Fetch only the logged-in user's data
-            user = UserJobSeeker.objects.get(id=ujs_id)
+            # Fetch user with related data (optimized with prefetch)
+            user = UserJobSeeker.objects.select_related().prefetch_related(
+                'skills',
+                'portfolio_items'
+            ).get(id=ujs_id)
+            
             context['user'] = user
             
             # Calculate age if date of birth exists
@@ -340,18 +345,90 @@ class IndexView(TemplateView):
                     (today.month, today.day) < (user.ujs_date_of_birth.month, user.ujs_date_of_birth.day))
                 context['user_age'] = age
             
+            # Add dashboard summary counts
+            context['portfolio_count'] = user.portfolio_items.count()
+            context['skill_count'] = user.skills.count()
+            
+            # Get matching job posts
+            if user.skills.exists() or user.areas_of_Interest:
+                # Get user's skills
+                user_skills = [skill.skill.name.lower() for skill in user.skills.all()]
+                
+                # Get areas of interest (split by comma and clean)
+                areas_of_interest = []
+                if user.areas_of_Interest:
+                    areas_of_interest = [area.strip().lower() 
+                                       for area in user.areas_of_Interest.split(',') 
+                                       if area.strip()]
+                
+                # Combine all search terms
+                search_terms = user_skills + areas_of_interest
+                
+                # Get matching job posts
+                matching_jobs = JobPost.objects.filter(
+                    Q(is_active=True) &
+                    (
+                        Q(required_skills__name__icontains=user_skills[0]) if user_skills else Q() |
+                        Q(title__icontains=search_terms[0]) if search_terms else Q() |
+                        Q(description__icontains=search_terms[0]) if search_terms else Q()
+                    )
+                ).distinct().order_by('-created_at')[:6]  # Limit to 6 most recent
+                
+                context['matching_jobs'] = matching_jobs
+            
         except UserJobSeeker.DoesNotExist:
             messages.error(self.request, 'User not found. Please login again.')
-            # Clear invalid session
-            if 'ujs_id' in self.request.session:
-                del self.request.session['ujs_id']
-            if 'ujs_username' in self.request.session:
-                del self.request.session['ujs_username']
+            # Clear all session data more thoroughly
+            self.request.session.flush()
         
         return context
-     
-     
     
+class MatchingJobPostsView(ListView):
+    model = JobPost
+    template_name = 'job_posts/matching_jobs.html'
+    context_object_name = 'jobs'
+    paginate_by = 10
+
+    def get_queryset(self):
+        ujs_id = self.request.session.get('ujs_id')
+        if not ujs_id:
+            return JobPost.objects.none()
+            
+        try:
+            user = UserJobSeeker.objects.prefetch_related('skills').get(id=ujs_id)
+            
+            # Get user's skills and interests
+            user_skills = [skill.skill.name.lower() for skill in user.skills.all()]
+            areas_of_interest = []
+            if user.areas_of_Interest:
+                areas_of_interest = [area.strip().lower() 
+                                   for area in user.areas_of_Interest.split(',') 
+                                   if area.strip()]
+            
+            # Build the query
+            query = Q(is_active=True)
+            
+            if user_skills:
+                query &= Q(required_skills__name__in=user_skills)
+            
+            if areas_of_interest:
+                interest_query = Q()
+                for interest in areas_of_interest:
+                    interest_query |= Q(title__icontains=interest) | Q(description__icontains=interest)
+                query &= interest_query
+            
+            return JobPost.objects.filter(query).distinct().order_by('-created_at')
+            
+        except UserJobSeeker.DoesNotExist:
+            return JobPost.objects.none()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_skills'] = [skill.skill.name for skill in 
+                                UserJobSeeker.objects.get(
+                                    id=self.request.session.get('ujs_id')
+                                ).skills.all()]
+        return context
     
 def SignIn(request):
     if request.method == 'POST':
@@ -393,11 +470,9 @@ def SignIn(request):
     else:
         # For GET request, just render the empty login form
         return render(request, 'auth_template/login.html')
-class LogoutView(View):
-    def get(self, request):
-        """Logs out the user and redirects them to the base template."""
-        logout(request)  
-        return redirect('/login/')
+def logout_view(request):
+    logout(request)  # Django's built-in logout
+    return redirect('signin') 
 
 
 
@@ -1045,6 +1120,7 @@ class JobApplicationList(generics.ListCreateAPIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class JobApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
+
     queryset = JobApplication.objects.all()
     serializer_class = JobApplicationSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -1142,8 +1218,21 @@ class ScholarshipApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
             "message": "Scholarship application deleted successfully!"
         }, status=status.HTTP_204_NO_CONTENT)
 
-def job_posts(request):
-    return render(request, 'base_template/job_post.html')
+class JobPostListView(ListView):
+    model = JobPost
+    template_name = 'base_template/job_list.html'
+    context_object_name = 'job_posts'
+    paginate_by = 10
+
+    def get_queryset(self):
+        # Return only active job posts ordered by title alphabetically
+        return JobPost.objects.filter(is_active=True).order_by('title').select_related('company').prefetch_related('required_skills')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 @login_required
 def job_posts(request):
     # List all active job posts
@@ -1330,7 +1419,8 @@ def project_collab(request):
     return render(request, 'opportunities/project_collab.html')
 
 def internships(request):
-    return render(request, 'opportunities/internships.html')
+    internships = Internship.objects.filter(is_active=True).order_by('-created_at')
+    return render(request, 'opportunities/internships.html', {'internships': internships})
 
 def scholarships(request):
     return render(request, 'opportunities/scholarships.html')

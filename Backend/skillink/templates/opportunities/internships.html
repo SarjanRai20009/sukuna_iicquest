@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkilLink - Connect, Learn, Grow in IT</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Custom CSS -->
+    <style>
+         :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+        
+        body {
+            font-family: "Nunito", sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient( 135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 3px solid var(--secondary-color);
+        }
+        
+        .stats-counter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .navbar {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        ection-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+            {% load static %}
+            <img src="{% static 'banner.svg' %}" alt="Banner" />
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                            <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle  fs-5" href="#" id="opportunitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Opportunities
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="opportunitiesDropdown">
+<a class="dropdown-item " href="{% url 'job_posts' %}" >Job Posts</a>
+<a class="dropdown-item " href="{% url 'events' %}">Events</a>
+<a class="dropdown-item " href="{% url 'project_collab' %}">Project Collab</a>
+<a class="dropdown-item " href="{% url 'internships' %}">Internships</a>
+<a class="dropdown-item " href="{% url 'scholarships' %}">Scholarship</a>
+
+    </ul>
+</li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#features">Updates</a>
+                    </li>
+            
+
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#contact">Contact</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-3 mt-3 mt-lg-0">
+                    {# --- START OF NEW/MODIFIED CODE --- #} {% if request.session.ujs_id %} {# Check if your custom user is logged in #}
+                    <a class="btn btn-danger  fs-5" href="{% url 'logout' %}">Logout</a> {# Link to your logout URL #} {% else %}
+                    <a href="{% url 'signin' %}" class="btn btn-outline-primary  fs-5">Login</a> {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+   <!-- All Job Posts Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Available Internships</h2>
+        <div class="row">
+            {% for internship in internships %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow card-hover h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">{{ internship.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ internship.company.name }}</h6>
+                        <p class="card-text"><strong>Location:</strong> {{ internship.location }} {% if internship.is_remote %}(Remote){% endif %}</p>
+                        <p class="card-text"><strong>Duration:</strong> {{ internship.duration_months }} month(s)</p>
+                        <p class="card-text"><strong>Type:</strong> {{ internship.get_internship_type_display }}</p>
+                        <p class="card-text"><strong>Stipend:</strong>
+                            {% if internship.is_paid and internship.stipend_amount %}
+                                {{ internship.currency }} {{ internship.stipend_amount }}
+                            {% else %}
+                                Unpaid
+                            {% endif %}
+                        </p>
+                        <p class="card-text"><strong>Deadline:</strong> {{ internship.application_deadline|date:"F d, Y H:i" }}</p>
+                        <p class="card-text small text-truncate" style="max-height: 3em;">{{ internship.description|truncatewords:20 }}</p>
+                        <a href="#" class="btn btn-outline-primary mt-2">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">No internships available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+                <!-- Footer -->
+                <footer class="py-4 bg-dark text-white">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-code me-2"></i>SkilLink</h5>
+                                <p class="small">
+                                    Connecting IT talent with opportunities to learn, grow, and succeed in the tech industry.
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <h5 class="mb-3">Quick Links</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <a href="#" class="text-white text-decoration-none">Home</a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a href="#features" class="text-white text-decoration-none">Features</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#opportunities" class="text-white text-decoration-none"
+                  >Opportunities</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#testimonials" class="text-white text-decoration-none"
+                  >Testimonials</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h5 class="mb-3">Legal</h5>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Terms of Service</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Cookie Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <div class="row">
+          <div class="col-md-6">
+            <p class="small mb-0">&copy; 2023 SkilLink. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <p class="small mb-0">
+              Made with <i class="fas fa-heart text-danger"></i> for IT students
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+
+      // Animation for stats counter
+      function animateValue(id, start, end, duration) {
+        let obj = document.getElementById(id);
+        let range = end - start;
+        let current = start;
+        let increment = end > start ? 1 : -1;
+        let stepTime = Math.abs(Math.floor(duration / range));
+        let timer = setInterval(function () {
+          current += increment;
+          obj.innerHTML = current + "+";
+          if (current == end) {
+            clearInterval(timer);
+          }
+        }, stepTime);
+      }
+
+      // Initialize counters when stats section is in view
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateValue("mentors-counter", 0, 1200, 2000);
+              animateValue("opportunities-counter", 0, 5000, 2000);
+              animateValue("members-counter", 0, 15000, 2000);
+              animateValue("companies-counter", 0, 200, 2000);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.5,
+        }
+      );
+
+      const statsSection = document.querySelector(".stats-counter");
+      if (statsSection) {
+        observer.observe(statsSection);
+      }
+    </script>
+  </body>
+</html>

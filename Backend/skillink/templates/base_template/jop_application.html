@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkilLink - Connect, Learn, Grow in IT</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Custom CSS -->
+    <style>
+         :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+        
+        body {
+            font-family: "Nunito", sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient( 135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 3px solid var(--secondary-color);
+        }
+        
+        .stats-counter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .navbar {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        ection-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+            {% load static %}
+            <img src="{% static 'banner.svg' %}" alt="Banner" />
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                            <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle  fs-5" href="#" id="opportunitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Opportunities
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="opportunitiesDropdown">
+<a class="dropdown-item " href="{% url 'job_posts' %}" >Job Posts</a>
+<a class="dropdown-item " href="{% url 'events' %}">Events</a>
+<a class="dropdown-item " href="{% url 'project_collab' %}">Project Collab</a>
+<a class="dropdown-item " href="{% url 'internships' %}">Internships</a>
+<a class="dropdown-item " href="{% url 'scholarships' %}">Scholarship</a>
+
+    </ul>
+</li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#features">Updates</a>
+                    </li>
+            
+
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#contact">Contact</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-3 mt-3 mt-lg-0">
+                    {# --- START OF NEW/MODIFIED CODE --- #} {% if request.session.ujs_id %} {# Check if your custom user is logged in #}
+                    <a class="btn btn-danger  fs-5" href="{% url 'logout' %}">Logout</a> {# Link to your logout URL #} {% else %}
+                    <a href="{% url 'signin' %}" class="btn btn-outline-primary  fs-5">Login</a> {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+  <div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">My Job Applications</h3>
+                <a href="#" class="btn btn-light btn-sm">
+                    <i class="fas fa-search me-1"></i> Find More Jobs
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            {% if applications %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'job_detail' application.job_post.id %}" class="text-decoration-none">
+                                    {{ application.job_post.title }}
+                                </a>
+                            </td>
+                            <td>{{ application.job_post.company.name }}</td>
+                            <td>{{ application.applied_at|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if application.status == 'applied' %}bg-secondary
+                                    {% elif application.status == 'under_review' %}bg-info
+                                    {% elif application.status == 'shortlisted' %}bg-primary
+                                    {% elif application.status == 'interview_scheduled' %}bg-warning text-dark
+                                    {% elif application.status == 'accepted' %}bg-success
+                                    {% elif application.status == 'rejected' %}bg-danger
+                                    {% endif %}">
+                                    {{ application.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Actions
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ forloop.counter }}">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'job_detail' application.job_post.id %}">
+                                                <i class="fas fa-eye me-2"></i>View Job
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#applicationModal{{ application.id }}">
+                                                <i class="fas fa-file-alt me-2"></i>View Application
+                                            </a>
+                                        </li>
+                                        {% if application.status != 'rejected' and application.status != 'accepted' %}
+                                        <li>
+                                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#withdrawModal{{ application.id }}">
+                                                <i class="fas fa-times-circle me-2"></i>Withdraw
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Application Detail Modal -->
+                        <div class="modal fade" id="applicationModal{{ application.id }}" tabindex="-1" aria-labelledby="applicationModalLabel{{ application.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title" id="applicationModalLabel{{ application.id }}">
+                                            Application for {{ application.job_post.title }}
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <h6>Job Details</h6>
+                                                <p class="mb-1"><strong>Company:</strong> {{ application.job_post.company.name }}</p>
+                                                <p class="mb-1"><strong>Location:</strong> {{ application.job_post.location }}</p>
+                                                <p class="mb-1"><strong>Type:</strong> {{ application.job_post.get_job_type_display }}</p>
+                                                <p class="mb-1"><strong>Experience:</strong> {{ application.job_post.get_experience_level_display }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Application Status</h6>
+                                                <p class="mb-1"><strong>Applied:</strong> {{ application.applied_at|date:"M d, Y" }}</p>
+                                                <p class="mb-1"><strong>Status:</strong> 
+                                                    <span class="badge 
+                                                        {% if application.status == 'applied' %}bg-secondary
+                                                        {% elif application.status == 'under_review' %}bg-info
+                                                        {% elif application.status == 'shortlisted' %}bg-primary
+                                                        {% elif application.status == 'interview_scheduled' %}bg-warning text-dark
+                                                        {% elif application.status == 'accepted' %}bg-success
+                                                        {% elif application.status == 'rejected' %}bg-danger
+                                                        {% endif %}">
+                                                        {{ application.get_status_display }}
+                                                    </span>
+                                                </p>
+                                                {% if application.updated_at %}
+                                                <p class="mb-1"><strong>Last Updated:</strong> {{ application.updated_at|date:"M d, Y" }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <h6>Cover Letter</h6>
+                                            {% if application.cover_letter %}
+                                                <div class="border p-3 bg-light rounded">
+                                                    {{ application.cover_letter|linebreaks }}
+                                                </div>
+                                            {% else %}
+                                                <p class="text-muted">No cover letter submitted</p>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <h6>Resume</h6>
+                                            {% if application.resume %}
+                                                <a href="{{ application.resume.url }}" class="btn btn-outline-primary" target="_blank">
+                                                    <i class="fas fa-download me-2"></i>Download Resume
+                                                </a>
+                                            {% else %}
+                                                <p class="text-muted">No resume uploaded</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Withdraw Application Modal -->
+                        <div class="modal fade" id="withdrawModal{{ application.id }}" tabindex="-1" aria-labelledby="withdrawModalLabel{{ application.id }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-warning text-dark">
+                                        <h5 class="modal-title" id="withdrawModalLabel{{ application.id }}">Withdraw Application</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="post" action="{% url 'withdraw_job_application' application.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to withdraw your application for <strong>{{ application.job_post.title }}</strong> at {{ application.job_post.company.name }}?</p>
+                                            <p>This action cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-danger">Withdraw Application</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if applications.has_other_pages %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if applications.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ applications.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in applications.paginator.page_range %}
+                        {% if applications.number == num %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                        {% elif num > applications.number|add:'-3' and num < applications.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if applications.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ applications.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ applications.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">No Applications Found</h4>
+                    <p>You haven't applied to any jobs yet.</p>
+                    <hr>
+                    <a href="{% url 'job_posts' %}" class="btn btn-primary">Browse Jobs</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+                <!-- Footer -->
+                <footer class="py-4 bg-dark text-white">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-code me-2"></i>SkilLink</h5>
+                                <p class="small">
+                                    Connecting IT talent with opportunities to learn, grow, and succeed in the tech industry.
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <h5 class="mb-3">Quick Links</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <a href="#" class="text-white text-decoration-none">Home</a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a href="#features" class="text-white text-decoration-none">Features</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#opportunities" class="text-white text-decoration-none"
+                  >Opportunities</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#testimonials" class="text-white text-decoration-none"
+                  >Testimonials</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h5 class="mb-3">Legal</h5>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Terms of Service</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Cookie Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <div class="row">
+          <div class="col-md-6">
+            <p class="small mb-0">&copy; 2023 SkilLink. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <p class="small mb-0">
+              Made with <i class="fas fa-heart text-danger"></i> for IT students
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+
+      // Animation for stats counter
+      function animateValue(id, start, end, duration) {
+        let obj = document.getElementById(id);
+        let range = end - start;
+        let current = start;
+        let increment = end > start ? 1 : -1;
+        let stepTime = Math.abs(Math.floor(duration / range));
+        let timer = setInterval(function () {
+          current += increment;
+          obj.innerHTML = current + "+";
+          if (current == end) {
+            clearInterval(timer);
+          }
+        }, stepTime);
+      }
+
+      // Initialize counters when stats section is in view
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animateValue("mentors-counter", 0, 1200, 2000);
+              animateValue("opportunities-counter", 0, 5000, 2000);
+              animateValue("members-counter", 0, 15000, 2000);
+              animateValue("companies-counter", 0, 200, 2000);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.5,
+        }
+      );
+
+      const statsSection = document.querySelector(".stats-counter");
+      if (statsSection) {
+        observer.observe(statsSection);
+      }
+    </script>
+  </body>
+</html>

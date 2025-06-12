@@ -14,11 +14,16 @@ from . import views # Correctly imports views from the same 'main' app folder
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('login/', SignIn, name = 'signin'),
-    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('logout/', logout_view, name='logout'),
 
-    
+    path('opportunities/matching-jobs/', MatchingJobPostsView.as_view(), name='matching_jobs'),
     path('register/', views.register_user, name='register_user'),
-    path('opportunities/job_posts/', views.job_posts, name='job_posts'),
+    path('job_application/', views.job_posts, name='job_posts'),
+
+    path('job-posts/', views.JobPostListView.as_view(), name='job_posts'),
+    # path('viewcontents/', views.ContentListView.as_view(), name='ujs-content-list'),
+
+
     path('opportunities/events/', views.events, name='events'),
     path('opportunities/project_collab/', views.project_collab, name='project_collab'),
     path('opportunities/internships/', views.internships, name='internships'),

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 # Create your models here.
 class Skill(models.Model):
@@ -14,6 +16,7 @@ class Skill(models.Model):
 
     class Meta:
         verbose_name_plural = "Skills"
+
 
 class UserJobSeeker(models.Model):
     ujs_full_name = models.CharField(max_length=30, blank=True, null=True)
@@ -402,6 +405,7 @@ class Scholarship(models.Model):
 
 
 # Application Models for tracking user applications
+
 class JobApplication(models.Model):
     job_post = models.ForeignKey(JobPost, on_delete=models.CASCADE, related_name='applications')
     applicant = models.ForeignKey(UserJobSeeker, on_delete=models.CASCADE, related_name='job_applications')
@@ -474,3 +478,55 @@ class ScholarshipApplication(models.Model):
     class Meta:
         unique_together = ('scholarship', 'applicant')
         verbose_name_plural = "Scholarship Applications"
+
+
+class Content(models.Model):
+    CONTENT_TYPES = [
+        ('pdf', 'PDF Document'),
+        ('video', 'Video'),
+        ('docx', 'Word Document'),
+        ('pptx', 'Presentation File'),
+        ('url', 'External URL'),
+
+    ]
+
+    title = models.CharField(max_length=255)
+    content_type = models.CharField(max_length=10, choices=CONTENT_TYPES)
+    # Generic relation to either Expert, Mentor, or Company
+    created_by_ct = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to=models.Q(app_label='main', model__in=['expert', 'mentor', 'company'])
+    )
+    created_by_id = models.PositiveIntegerField()
+    created_by = GenericForeignKey('created_by_ct', 'created_by_id')
+
+    file = models.FileField(
+        upload_to='content_files/',
+        blank=True,
+        null=True,
+        help_text='Upload a file if content_type is pdf, video, or docx'
+    )
+    thumbnail = models.ImageField(
+        upload_to='content_thumbnails/',
+        blank=True,
+        null=True,
+        help_text='Thumbnail image (e.g. video preview or PDF cover)'
+    )
+    url = models.URLField(
+        blank=True,
+        null=True,
+        help_text='Only required if content_type is url'
+    )
+
+    skills = models.ManyToManyField(Skill, related_name='contents', blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} ({self.get_content_type_display()}) by {self.created_by}"
+
+    class Meta:
+        verbose_name_plural = "Contents"
+        ordering = ['-created_at']

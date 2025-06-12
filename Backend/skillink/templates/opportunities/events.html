@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkilLink - Connect, Learn, Grow in IT</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Custom CSS -->
+    <style>
+         :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+        
+        body {
+            font-family: "Nunito", sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient( 135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .testimonial-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 3px solid var(--secondary-color);
+        }
+        
+        .stats-counter {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .navbar {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        ection-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+            {% load static %}
+            <img src="{% static 'banner.svg' %}" alt="Banner" />
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                            <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle  fs-5" href="#" id="opportunitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Opportunities
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="opportunitiesDropdown">
+<a class="dropdown-item " href="{% url 'job_posts' %}" >Job Posts</a>
+<a class="dropdown-item " href="{% url 'events' %}">Events</a>
+<a class="dropdown-item " href="{% url 'project_collab' %}">Project Collab</a>
+<a class="dropdown-item " href="{% url 'internships' %}">Internships</a>
+<a class="dropdown-item " href="{% url 'scholarships' %}">Scholarship</a>
+
+    </ul>
+</li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#features">Updates</a>
+                    </li>
+            
+
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#contact">Contact</a>
+                    </li>
+                </ul>
+                <div class="ms-lg-3 mt-3 mt-lg-0">
+                    {# --- START OF NEW/MODIFIED CODE --- #} {% if request.session.ujs_id %} {# Check if your custom user is logged in #}
+                    <a class="btn btn-danger  fs-5" href="{% url 'logout' %}">Logout</a> {# Link to your logout URL #} {% else %}
+                    <a href="{% url 'signin' %}" class="btn btn-outline-primary  fs-5">Login</a> {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+   <!-- All Job Posts Section -->
+<!-- News & Events Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold mb-3">News & Events</h1>
+            <p class="lead text-muted">Stay updated with the latest happenings in the tech community</p>
+            
+            <!-- Filter Buttons - All event types included -->
+            <div class="d-flex flex-wrap justify-content-center gap-2 my-4">
+                <button class="btn btn-outline-primary filter-btn active" data-filter="all">All</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="news">Company News</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="event">Events</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="webinar">Webinars</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="workshop">Workshops</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="conference">Conferences</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="hackathon">Hackathons</button>
+                <button class="btn btn-outline-primary filter-btn" data-filter="job_fair">Job Fairs</button>
+            </div>
+        </div>
+
+        <div class="row g-4" id="events-container">
+            {% for event in news_events %}
+            {% if event.is_published %}  {# Only show published events #}
+            <div class="col-lg-4 col-md-6" data-type="{{ event.event_type }}">
+                <div class="card h-100 border-0 shadow-sm card-hover">
+                    {% if event.featured_image %}
+                    <img src="{{ event.featured_image.url }}" class="card-img-top" alt="{{ event.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-{% if event.event_type == 'news' %}newspaper{% elif event.event_type == 'webinar' %}video{% elif event.event_type == 'workshop' %}tools{% elif event.event_type == 'conference' %}users{% elif event.event_type == 'hackathon' %}laptop-code{% elif event.event_type == 'job_fair' %}briefcase{% else %}calendar-alt{% endif %} fa-4x text-white"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary rounded-pill">{{ event.get_event_type_display }}</span>
+                            <div>
+                                {% if event.is_virtual %}
+                                <span class="badge bg-success rounded-pill me-1">Virtual</span>
+                                {% endif %}
+                                {% if event.max_participants %}
+                                <span class="badge bg-info rounded-pill">
+                                    {{ event.current_participants }}/{{ event.max_participants }} spots
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <h3 class="h5 card-title">{{ event.title }}</h3>
+                        <p class="card-text text-muted">{{ event.summary|default:event.content|truncatewords:20 }}</p>
+                        
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            {% if event.company %}
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-building me-1"></i> {{ event.company.name }}
+                            </span>
+                            {% endif %}
+                            
+                            {% if event.expert %}
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-user-tie me-1"></i> {{ event.expert.name }}
+                            </span>
+                            {% endif %}
+                            
+                            {% if event.mentor %}
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-chalkboard-teacher me-1"></i> {{ event.mentor.name }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if event.tags.all %}
+                        <div class="mt-2">
+                            {% for tag in event.tags.all %}
+                            <span class="badge bg-light text-primary border border-primary me-1 mb-1">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if event.event_date %}
+                                <div class="d-flex align-items-center">
+                                    <i class="far fa-calendar-alt me-2 text-primary"></i>
+                                    <small class="text-muted">
+                                        {{ event.event_date|date:"M d, Y" }}
+                                        {% if event.registration_deadline %}
+                                        <br>
+                                        <small class="text-danger">
+                                            <i class="far fa-clock me-1"></i> 
+                                            Reg. until {{ event.registration_deadline|date:"M d" }}
+                                        </small>
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                {% endif %}
+                                
+                                {% if event.event_location %}
+                                <div class="d-flex align-items-center mt-1">
+                                    <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                    <small class="text-muted">{{ event.event_location }}</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="text-end">
+                                {% if event.registration_url %}
+                                <a href="{{ event.registration_url }}" target="_blank" class="btn btn-sm btn-primary stretched-link">
+                                    Register <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-outline-primary stretched-link">
+                                    Details <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                                {% endif %}
+                                <div class="mt-1">
+                                    <small class="text-muted">
+                                        <i class="far fa-eye me-1"></i> {{ event.views_count }} views
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No upcoming news or events available. Check back later!
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if news_events|length > 6 %}
+        <div class="text-center mt-4">
+            <button class="btn btn-outline-primary" id="load-more-events">
+                Load More Events <i class="fas fa-chevron-down ms-1"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+                <!-- Footer -->
+                <footer class="py-4 bg-dark text-white">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3"><i class="fas fa-code me-2"></i>SkilLink</h5>
+                                <p class="small">
+                                    Connecting IT talent with opportunities to learn, grow, and succeed in the tech industry.
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <h5 class="mb-3">Quick Links</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <a href="#" class="text-white text-decoration-none">Home</a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a href="#features" class="text-white text-decoration-none">Features</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#opportunities" class="text-white text-decoration-none"
+                  >Opportunities</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#testimonials" class="text-white text-decoration-none"
+                  >Testimonials</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h5 class="mb-3">Legal</h5>
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Privacy Policy</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Terms of Service</a
+                >
+              </li>
+              <li class="mb-2">
+                <a href="#" class="text-white text-decoration-none"
+                  >Cookie Policy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <div class="row">
+          <div class="col-md-6">
+            <p class="small mb-0">&copy; 2023 SkilLink. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <p class="small mb-0">
+              Made with <i class="fas fa-heart text-danger"></i> for IT students
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+  <script>
+    // Main document ready function
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality with empty state handling
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const filterValue = this.getAttribute('data-filter');
+                const events = document.querySelectorAll('#events-container > [data-type]');
+                let visibleCount = 0;
+                
+                events.forEach(event => {
+                    if (filterValue === 'all' || event.getAttribute('data-type') === filterValue) {
+                        event.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        event.style.display = 'none';
+                    }
+                });
+                
+                // Show message if no events match filter
+                const emptyMessage = document.querySelector('#events-container .no-events-message');
+                if (visibleCount === 0) {
+                    if (!emptyMessage) {
+                        const container = document.getElementById('events-container');
+                        container.insertAdjacentHTML('beforeend', `
+                            <div class="col-12 text-center py-5 no-events-message">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-circle me-2"></i> 
+                                    No events match your filter. Try a different category.
+                                </div>
+                            </div>
+                        `);
+                    }
+                } else if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+                
+                // Hide load more button if filtered view has few items
+                const loadMoreBtn = document.getElementById('load-more-events');
+                if (loadMoreBtn) {
+                    loadMoreBtn.style.display = visibleCount > 6 ? 'inline-block' : 'none';
+                }
+            });
+        });
+        
+        // Load more functionality
+        document.getElementById('load-more-events')?.addEventListener('click', function() {
+            // In a real implementation, this would fetch more events via AJAX
+            // For demo purposes, we'll simulate loading more items
+            const hiddenEvents = document.querySelectorAll('#events-container > [data-type][style="display: none;"]');
+            const itemsToShow = Math.min(3, hiddenEvents.length);
+            
+            for (let i = 0; i < itemsToShow; i++) {
+                hiddenEvents[i].style.display = 'block';
+            }
+            
+            // Hide button if no more items to load
+            if (hiddenEvents.length <= itemsToShow) {
+                this.style.display = 'none';
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+            anchor.addEventListener("click", function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute("href"));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+                    
+                    // Update URL without page jump
+                    if (history.pushState) {
+                        history.pushState(null, null, this.getAttribute("href"));
+                    }
+                }
+            });
+        });
+
+        // Animation for stats counter
+        function animateValue(id, start, end, duration) {
+            let obj = document.getElementById(id);
+            if (!obj) return;
+            
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current + "+";
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        // Initialize counters when stats section is in view
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        animateValue("mentors-counter", 0, 1200, 2000);
+                        animateValue("opportunities-counter", 0, 5000, 2000);
+                        animateValue("members-counter", 0, 15000, 2000);
+                        animateValue("companies-counter", 0, 200, 2000);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.5,
+            }
+        );
+
+        const statsSection = document.querySelector(".stats-counter");
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+
+        // Additional enhancement: Close filter message when clicking 'All' filter
+        document.querySelector('.filter-btn[data-filter="all"]')?.addEventListener('click', function() {
+            const emptyMessage = document.querySelector('#events-container .no-events-message');
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+        });
+    });
+</script>
+  </body>
+</html>

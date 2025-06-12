@@ -121,34 +121,35 @@
         </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="opportunitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle  fs-5" href="#" id="opportunitiesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         Opportunities
     </a>
     <ul class="dropdown-menu" aria-labelledby="opportunitiesDropdown">
-<a class="dropdown-item" href="{% url 'job_posts' %}">Job Posts</a>
-<a class="dropdown-item" href="{% url 'events' %}">Events</a>
-<a class="dropdown-item" href="{% url 'project_collab' %}">Project Collab</a>
-<a class="dropdown-item" href="{% url 'internships' %}">Internships</a>
-<a class="dropdown-item" href="{% url 'scholarships' %}">Scholarship</a>
+<a class="dropdown-item " href="{% url 'job_posts' %}" >Job Posts</a>
+<a class="dropdown-item " href="{% url 'events' %}">Events</a>
+<a class="dropdown-item " href="{% url 'project_collab' %}">Project Collab</a>
+<a class="dropdown-item " href="{% url 'internships' %}">Internships</a>
+<a class="dropdown-item " href="{% url 'scholarships' %}">Scholarship</a>
 
     </ul>
 </li>
+                    <li class="nav-item">
+                        <a class="nav-link  fs-5" href="#features">Updates</a>
+                    </li>
+            
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                        <a class="nav-link  fs-5" href="#testimonials">Testimonials</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
+                        <a class="nav-link  fs-5" href="#contact">Contact</a>
                     </li>
                 </ul>
                 <div class="ms-lg-3 mt-3 mt-lg-0">
                     {# --- START OF NEW/MODIFIED CODE --- #} {% if request.session.ujs_id %} {# Check if your custom user is logged in #}
-                    <a class="btn btn-danger" href="{% url 'logout' %}">Logout</a> {# Link to your logout URL #} {% else %}
-                    <a href="{% url 'signin' %}" class="btn btn-outline-primary">Login</a> {% endif %}
+                    <a class="btn btn-danger  fs-5" href="{% url 'logout' %}">Logout</a> {# Link to your logout URL #} {% else %}
+                    <a href="{% url 'signin' %}" class="btn btn-outline-primary  fs-5">Login</a> {% endif %}
                 </div>
             </div>
         </div>

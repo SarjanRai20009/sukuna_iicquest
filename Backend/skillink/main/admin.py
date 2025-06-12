@@ -143,3 +143,12 @@ class PortfolioItemAdmin(admin.ModelAdmin):
     list_filter = ('date_completed', 'created_at')
     ordering = ('-date_completed', '-created_at') # Order by most recent completion/creation date
     readonly_fields = ('created_at', 'updated_at')
+
+@admin.register(Content)
+class ContentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'content_type', 'created_by', 'created_at', 'updated_at')
+    search_fields = ('title', 'created_by__id')
+    list_filter = ('content_type', 'created_at')
+    filter_horizontal = ('skills',)
+    readonly_fields = ('created_at', 'updated_at')
+    ordering = ('-created_at',)
